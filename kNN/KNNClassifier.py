@@ -20,7 +20,6 @@ class KNNClassifier:
             distances = np.linalg.norm(self.X_train.values - x, axis=1, ord=self.metric)
 
             nns = np.argsort(distances)[:self.k] #k najblizszych sasiadow
-            #print(nns)
 
             nn_labels = self.y_train.iloc[nns] #etykiety najblizszych sasiadow
 

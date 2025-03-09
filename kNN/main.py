@@ -1,5 +1,5 @@
 from sklearn.datasets import load_wine
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.manifold import TSNE
 import pandas as pd
 import numpy as np
@@ -9,46 +9,26 @@ from KNNClassifier import KNNClassifier
 from quality_measures import accuracy, precision, recall, f1_score
 
 
-def optimize_k(X, y, k_from, k_to):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-    errors = []
-    k_values = range(k_from, k_to + 1)
-
+def optimize_hiperparams(X, y, k_values = [1, 5, 10, 15, 20], metric_values = [1, 1.5, 2, 3, 4]):
+    best_k, best_p, best_score = 0, 0, 0
     for k in k_values:
-        knn = KNNClassifier(k=k)
-        knn.fit(X_train, y_train)
-        y_pred = knn.predict(X_test)
+        for p in metric_values:
+            knn = KNNClassifier(k=k, metric=p)
+            kf = KFold(n_splits=5, shuffle=True, random_state=42)
+            scores = []
 
-        errors.append(1 - accuracy(y_test, y_pred))
+            for train_index, test_index in kf.split(X):
+                X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+                y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+                knn.fit(X_train, y_train)
+                y_pred = knn.predict(X_test)
+                scores.append(accuracy(y_test, y_pred))
 
-    print(f"Najlepsze k: {k_values[np.argmin(errors)]}\nAccuracy: {accuracy(y_test, y_pred)}")
-
-    plt.plot(k_values, errors, marker='o')
-    plt.xlabel("Liczba sąsiadów (k)")
-    plt.ylabel("Błąd klasyfikacji (1 - accuracy)")
-    plt.title("Wykres błędu klasyfikacji dla różnych k")
-    plt.show()
-
-def optimize_p(X, y, k, metrics = [1, 1.5, 2, 3, 4]):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-    acc = []
-
-    for p in metrics:
-        knn = KNNClassifier(k=k, metric=p)
-        knn.fit(X_train, y_train) 
-        y_pred = knn.predict(X_test)
-
-        acc.append(accuracy(y_test, y_pred))
-
-    print(f"Najlepsze p: {metrics[np.argmax(acc)]}\nAccuracy: {accuracy(y_test, y_pred)}")
-
-    plt.plot(metrics, acc, marker='o')
-    plt.xlabel("Wartość p w metryce Minkowskiego")
-    plt.ylabel("Accuracy")
-    plt.title("Porównanie accuracy dla różnych metryk")
-    plt.show()
+            mean_score = np.array(scores).mean()
+            if mean_score > best_score:
+                best_k, best_p, best_score = k, p, mean_score
+    
+    return best_k, best_p, best_score
 
 def tsne(X, y):
     X_embedded = TSNE(n_components=2).fit_transform(X)
@@ -115,11 +95,8 @@ def main():
     print(f"Recall: {recall(y_test.values, y_pred)}")
     print(f"F1 score: {f1_score(y_test.values, y_pred)}")
 
-    print(f"\nOptymalizacja parametru k:\n")
-    optimize_k(X, y, k_from=1, k_to=30)
-
-    print(f"Optymalizacja metryki:\n")
-    optimize_p(X, y, k=3)
+    best_params = optimize_hiperparams(X, y)
+    print(f"Optymalne parametry:\n  k: {best_params[0]}\n  p: {best_params[1]}\n  acc: {best_params[2]}")
 
     tsne(X, y)
 
