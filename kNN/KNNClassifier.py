@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 class KNNClassifier:
     def __init__(self, k=3, metric=2):
@@ -17,7 +18,7 @@ class KNNClassifier:
         y_pred = []
 
         for x in X_test.values:
-            distances = np.linalg.norm(self.X_train.values - x, axis=1, ord=self.metric)
+            distances = np.linalg.norm(self.X_train - x, axis=1, ord=self.metric)
 
             nns = np.argsort(distances)[:self.k] #k najblizszych sasiadow
 
@@ -25,7 +26,7 @@ class KNNClassifier:
 
             y_pred.append(nn_labels.mode()[0]) #ustawienie etykiety pojawiajacej sie najczesciej
 
-        return y_pred
+        return np.array(y_pred)
     
     def confusion_matrix(self, y_true, y_pred):
         unique_labels = np.unique(np.concatenate((y_true, y_pred)))
