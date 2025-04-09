@@ -27,7 +27,7 @@ def plot_decision_boundary(model, X, y):
     #x - f1 / y - f2
     scat = plt.scatter(X[:, 0], X[:, 1], c=y, cmap='coolwarm', edgecolors='k')
     plt.legend(*scat.legend_elements())
-    plt.title('Banknote Notation - Decision Boundary')
+    plt.title('Decision boundary of Banknote Authentication Classification')
     plt.show()
 
 # fetch dataset 
