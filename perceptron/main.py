@@ -65,11 +65,11 @@ print(f"Recall: {recall(y_test, y_pred, average='micro') * 100:.2f}%")
 print(f"F1 score: {f1_score(y_test, y_pred, average='micro') * 100:.2f}%")
 
 
-acc_range, rate_range, best_acc, best_rate = opt_params()
-print(f"Best accuracy: {best_acc * 100:.2f} on learning rate - {best_rate}")
+# acc_range, rate_range, best_acc, best_rate = opt_params()
+# print(f"Best accuracy: {best_acc * 100:.2f} on learning rate - {best_rate}")
 
-plt.plot(rate_range, acc_range, marker="o")
-plt.title("Perceptron accuracy based on learning_rate")
-plt.xlabel("learning_rate")
-plt.ylabel("accuracy")
-plt.show()
+# plt.plot(rate_range, acc_range, marker="o")
+# plt.title("Perceptron accuracy based on learning_rate")
+# plt.xlabel("learning_rate")
+# plt.ylabel("accuracy")
+# plt.show()

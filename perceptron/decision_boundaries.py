@@ -4,6 +4,7 @@ from ucimlrepo import fetch_ucirepo
 from sklearn.manifold import TSNE
 from Perceptron import Perceptron
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 def plot_decision_boundary(model, X, y):
     # X = [[f1, f2]...]
@@ -35,9 +36,10 @@ banknote_authentication = fetch_ucirepo(id=267)
 X = np.array(banknote_authentication.data.features, dtype=float) 
 y = np.array(banknote_authentication.data.targets, dtype=int) 
 
+scaler = StandardScaler()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-X_embedded = TSNE(n_components=2, random_state=42).fit_transform(X)
+X_embedded = TSNE(n_components=2, random_state=42).fit_transform(scaler.fit_transform(X))
 
 perceptron_tsne = Perceptron(learning_rate=0.01, n_iter=1000)
 perceptron_tsne.fit(X_embedded, y)
