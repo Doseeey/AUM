@@ -5,6 +5,7 @@ from sklearn.metrics import confusion_matrix
 
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier as OvR
+from sklearn.inspection import DecisionBoundaryDisplay
 
 from sklearn.manifold import TSNE
 
@@ -18,9 +19,9 @@ X, y = data.data, data.target
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.7)
 
-ovr = OvRClassifier(learning_rate=0.1, n_iter=100)
+ovr = OvRClassifier(learning_rate=0.01, n_iter=50)
 ovr.fit(X_train, y_train)
 y_pred = ovr.predict(X_test)
 
@@ -50,22 +51,26 @@ print(f"Precision {precision(y_test, y_pred_2, average='micro') * 100:.2f}%  {pr
 print(f"Recall    {recall(y_test, y_pred_2, average='micro') * 100:.2f}%  {recall(y_test, y_pred_2, average='micro') * 100:.2f}%")
 print(f"F1-score  {f1_score(y_test, y_pred_2, average='micro') * 100:.2f}%  {f1_score(y_test, y_pred_2, average='micro') * 100:.2f}%")
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y) #balance negative/positive classes
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42) 
 
 X_embedded = TSNE(n_components=2, random_state=42).fit_transform(X)
 
 X_train_embedded = TSNE(n_components=2, random_state=42).fit_transform(X_train)
 X_test_embedded = TSNE(n_components=2, random_state=42).fit_transform(X_test)
 
-ovr_percep = OvRClassifier(learning_rate=0.01, n_iter=1000)
+ovr_percep = OvRClassifier(learning_rate=0.1, n_iter=100)
 ovr_percep.fit(X_train_embedded, y_train)
 
+plot_decision_boundary(ovr_percep, X_embedded, y, "Decision boundaries - OvR Perceptron")
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y) #balance negative/positive classes
+
+X_embedded = TSNE(n_components=2, random_state=42).fit_transform(X)
+
+X_train_embedded = TSNE(n_components=2, random_state=42).fit_transform(X_train)
+X_test_embedded = TSNE(n_components=2, random_state=42).fit_transform(X_test)
+
 ovr_svc = OvR(SVC(kernel="linear"))
-ovr_svc.fit(X_train_embedded, y_train)
+ovr_svc.fit(X_embedded, y)
 
-plot_decision_boundary(ovr_percep, X_embedded, y)
-plot_decision_boundary(ovr_svc, X_embedded, y)
-
-# plot_decision_boundary(ovr_percep, X_test_embedded, y_test)
-# plot_decision_boundary(ovr_svc, X_test_embedded, y_test)
+plot_decision_boundary(ovr_svc, X_embedded, y, "Decision boundaries - OvR SVC")
