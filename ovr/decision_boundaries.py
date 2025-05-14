@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
-def plot_decision_boundary(model, X, y, title):
+def plot_decision_boundary(model, X, y, title, swap=False):
     # X = [[f1, f2]...]
     extend_bounds = 1
     x_min, x_max = X[:, 0].min() - extend_bounds, X[:, 0].max() + extend_bounds # +1 to have spare space from the edge
@@ -14,7 +14,10 @@ def plot_decision_boundary(model, X, y, title):
 
     
     Z = model.predict(np.c_[xx.ravel(), yy.ravel()]) #flatten data and predict
-    Z = Z.reshape(xx.shape) #merge them back to shape of X_embedded for contourf
+    if swap:
+        Z = np.where(Z == 0, 2, np.where(Z == 2, 0, 1)).reshape(xx.shape)
+    else:
+        Z = Z.reshape(xx.shape) #merge them back to shape of X_embedded for contourf
 
     #set boundary
     #meshgrid and labels

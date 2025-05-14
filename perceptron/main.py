@@ -8,20 +8,21 @@ import matplotlib.pyplot as plt
 
 def opt_params():
     acc = []
-    rate = np.arange(0.01, 1.00, 0.02)
+    #rate = np.arange(0.01, 1.00, 0.02)
+    rate = [0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1]
     best_acc = 0
     best_rate = 0
 
 
     for learning_rate in rate:
-        perceptron = Perceptron(learning_rate=learning_rate, n_iter=500)
+        perceptron = Perceptron(learning_rate=learning_rate, n_iter=200)
         perceptron.fit(X_train, y_train)
 
         y_pred = perceptron.predict(X_test)
 
         rate_acc = accuracy(y_test, y_pred)
+        print(f"learning_rate: {learning_rate}, accuracy: {rate_acc}")
         acc.append(rate_acc)
-        print(learning_rate)
 
         if rate_acc > best_acc:
             best_acc = rate_acc
@@ -65,11 +66,12 @@ print(f"Recall: {recall(y_test, y_pred, average='micro') * 100:.2f}%")
 print(f"F1 score: {f1_score(y_test, y_pred, average='micro') * 100:.2f}%")
 
 
-# acc_range, rate_range, best_acc, best_rate = opt_params()
-# print(f"Best accuracy: {best_acc * 100:.2f} on learning rate - {best_rate}")
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+acc_range, rate_range, best_acc, best_rate = opt_params()
+print(f"Best accuracy: {best_acc * 100:.2f} on learning rate - {best_rate}")
 
-# plt.plot(rate_range, acc_range, marker="o")
-# plt.title("Perceptron accuracy based on learning_rate")
-# plt.xlabel("learning_rate")
-# plt.ylabel("accuracy")
-# plt.show()
+plt.plot(rate_range, acc_range, marker="o")
+plt.title("Perceptron accuracy based on learning_rate")
+plt.xlabel("learning_rate")
+plt.ylabel("accuracy")
+plt.show()

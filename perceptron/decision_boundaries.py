@@ -12,10 +12,9 @@ def plot_decision_boundary(model, X, y):
     extend_bounds = 5
     x_min, x_max = X[:, 0].min() - extend_bounds, X[:, 0].max() + extend_bounds # +1 to have spare space from the edge
     y_min, y_max = X[:, 1].min() - extend_bounds, X[:, 1].max() + extend_bounds
-
-    #Matrix with columns from x_min to x_max with step h
+    
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
+                         np.arange(y_min, y_max, h)) #Matrix with columns from x_min to x_max with step h
 
     
     Z = model.predict(np.c_[xx.ravel(), yy.ravel()]) #flatten data and merge them back to shape of X_embedded
